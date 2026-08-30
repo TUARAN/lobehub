@@ -17,6 +17,11 @@ export interface StalePluginCleanupInput {
    */
   isAccessResolved: boolean;
   /**
+   * Installed custom plugins are absent from `validIdentifiers` until their
+   * catalog loads, so cleanup must not run while that list is incomplete.
+   */
+  loadingInstallPlugins: boolean;
+  /**
    * Connector identifiers are absent from `validIdentifiers` until
    * `fetchConnectors()` resolves, so pruning before that would mark enabled
    * connectors as stale.
@@ -45,10 +50,12 @@ export const resolveStalePluginCleanup = ({
   canEditResource,
   isAccessResolved,
   isConnectorsInit,
+  loadingInstallPlugins,
   plugins,
   validIdentifiers,
 }: StalePluginCleanupInput): AgentPluginEntry[] | null => {
   if (!canEditContent || !isAccessResolved || !canEditResource) return null;
+  if (loadingInstallPlugins) return null;
   if (!isConnectorsInit) return null;
   if (validIdentifiers.size === 0) return null;
 

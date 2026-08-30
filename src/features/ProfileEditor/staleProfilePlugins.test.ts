@@ -7,6 +7,7 @@ const baseInput = (overrides: Partial<StalePluginCleanupInput> = {}): StalePlugi
   canEditResource: true,
   isAccessResolved: true,
   isConnectorsInit: true,
+  loadingInstallPlugins: false,
   plugins: ['web-search', 'ghost-tool'],
   validIdentifiers: new Set(['web-search']),
   ...overrides,
@@ -37,6 +38,10 @@ describe('resolveStalePluginCleanup', () => {
 
   it('returns null before the connector store has loaded', () => {
     expect(resolveStalePluginCleanup(baseInput({ isConnectorsInit: false }))).toBeNull();
+  });
+
+  it('returns null while installed plugins are loading', () => {
+    expect(resolveStalePluginCleanup(baseInput({ loadingInstallPlugins: true }))).toBeNull();
   });
 
   it('returns null when no identifiers are known yet', () => {
